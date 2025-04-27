@@ -43,8 +43,8 @@
 ### 1. 克隆项目
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-dir>
+git clone https://github.com/precious0612/Vehicle_Detection_Service.git
+cd Vehicle_Detection_Service
 ```
 
 ### 2. 启动服务
