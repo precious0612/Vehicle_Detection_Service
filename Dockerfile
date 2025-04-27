@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.0-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu20.04
 
 # 安装系统依赖
 RUN apt-get update && \
