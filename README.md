@@ -135,7 +135,7 @@ DELETE /stop_stream/{stream_id}
 ### 1. 容器无法使用 GPU？
 
 - 请确保主机已正确安装 NVIDIA 驱动和 nvidia-docker。
-- 测试命令：`docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu20.04 nvidia-smi`
+- 测试命令：`docker run --rm --gpus all nvidia/cuda:12.8.1-cudnn-devel-ubuntu20.04 nvidia-smi`
 
 ### 2. 权重下载慢或失败？
 
