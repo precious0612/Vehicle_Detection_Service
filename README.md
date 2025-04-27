@@ -1,6 +1,6 @@
 # Vehicle Detection Service
 
-本项目基于 FastAPI + YOLOv5 + DeepSort 实现多路视频流的车辆检测与跟踪，支持 RTSP/HTTP 视频流输出，并支持 GPU 加速和多流并发。  
+本项目基于 FastAPI + YOLOv5 + DeepSort 实现多路视频流的车辆检测与跟踪，支持 RTSP（暂不支持）/HTTP 视频流输出，并支持 GPU 加速和多流并发。  
 支持 Docker Compose 一键部署，内置 Prometheus GPU/主机监控。
 
 ---
