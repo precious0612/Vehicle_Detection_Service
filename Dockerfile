@@ -1,5 +1,8 @@
 FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu20.04
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Shanghai
+
 # 安装系统依赖
 RUN apt-get update && \
     apt-get install -y python3 python3-pip ffmpeg libgl1-mesa-glx && \
