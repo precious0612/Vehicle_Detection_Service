@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  vehicledetect:
+    build: .
+    container_name: vehicledetect
+    ports:
+      - "2334:2334"
+      - "8554:8554"
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: nvidia
+    restart: unless-stopped
+    volumes:
+      - yolov5-cache:/root/.cache/torch/hub
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+
+  dcgm-exporter:
+    image: nvidia/dcgm-exporter:3.3.5-3.1.8-ubuntu20.04
+    container_name: dcgm-exporter
+    runtime: nvidia
+    ports:
+      - "9400:9400"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+volumes:
+  yolov5-cache:
