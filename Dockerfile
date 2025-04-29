@@ -22,7 +22,7 @@ RUN python3 -m pip install --upgrade pip && \
     if [ "$USE_CHINA_MIRROR" = "true" ]; then \
         pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple; \
     fi && \
-    pip install --cache-dir /root/.cache/pip -r requirements.txt && \
+    pip install --cache-dir /root/.cache/pip -r requirements.txt
 
 # 可选：提前下载YOLOv5权重
 # RUN python3 -c "import torch; torch.hub.load('ultralytics/yolov5', 'yolov5s')"
