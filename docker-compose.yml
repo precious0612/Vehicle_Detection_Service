@@ -29,7 +29,7 @@ services:
         USE_CHINA_MIRROR: "true"
     container_name: vehicledetect-cn
     ports:
-      - "2335:2334"  # 避免端口冲突
+      - "2334:2334"  # 避免端口冲突
       - "8555:8554"
     environment:
       - PYTHONUNBUFFERED=1
