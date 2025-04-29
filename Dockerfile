@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.0-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu20.04
 
 # 构建参数，默认国际源
 ARG USE_CHINA_MIRROR=false

@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   vehicledetect:  # 国际版（默认）
     build:
