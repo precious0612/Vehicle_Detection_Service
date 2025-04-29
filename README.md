@@ -16,21 +16,10 @@
 
 ---
 
-## 功能特性
-
-- 支持多路视频流并发检测（每路独立线程）
-- 支持 RTSP/HTTP 视频流输出
-- 支持 GPU 加速（NVIDIA T4/CUDA 12.4 及以上）
-- 支持权重缓存，避免重复下载
-- 支持 Prometheus 监控 GPU/主机资源
-- 容器化部署，环境一致性强
-
----
-
 ## 环境要求
 
 - Ubuntu 20.04+
-- NVIDIA GPU（如 Tesla T4），已安装驱动
+- NVIDIA GPU，已安装驱动
 - CUDA 12.4 及以上
 - Docker 20.10+，Docker Compose 1.29+
 - 已安装 NVIDIA Container Toolkit  
