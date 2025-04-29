@@ -23,11 +23,6 @@ RUN python3 -m pip install --upgrade pip && \
         pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple; \
     fi && \
     pip install --cache-dir /root/.cache/pip -r requirements.txt && \
-    if [ "$USE_CHINA_MIRROR" = "true" ]; then \
-        pip install torch==2.2.2+cu124 torchvision==0.17.2+cu124 --index-url https://pypi.tuna.tsinghua.edu.cn/simple; \
-    else \
-        pip install torch==2.2.2+cu124 torchvision==0.17.2+cu124 --index-url https://download.pytorch.org/whl/cu124; \
-    fi
 
 # 可选：提前下载YOLOv5权重
 # RUN python3 -c "import torch; torch.hub.load('ultralytics/yolov5', 'yolov5s')"
