@@ -9,6 +9,8 @@ import warnings
 from functools import partial
 from rtsp_server import RTSPOutputStream
 import logging
+from threading import Lock
+import threading
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -38,6 +40,7 @@ class VideoProcessor:
         self.deepsort = DeepSort()
         self.car_count = 0
         self.vehicle_tracker = deque(maxlen=30)  # 30 frames window
+        self.tracker_lock = threading.Lock()
         
         # RTSP输出设置
         self.rtsp_server = None
@@ -72,9 +75,10 @@ class VideoProcessor:
         return frame
     
     def _update_vehicle_count(self, track_id: int) -> None:
-        if track_id not in self.vehicle_tracker:
-            self.vehicle_tracker.append(track_id)
-            self.car_count += 1
+        with self.tracker_lock:
+            if track_id not in self.vehicle_tracker:
+                self.vehicle_tracker.append(track_id)
+                self.car_count += 1
     
     def process_frame(self, frame: np.ndarray) -> ProcessedFrame:
         # Detect vehicles using YOLO
@@ -91,11 +95,17 @@ class VideoProcessor:
             # Track vehicles
             tracks = self.deepsort.update_tracks(deepsort_detections, frame=frame)
             
+            # 清空当前帧的车辆列表
+            with self.tracker_lock:
+                self.vehicle_tracker.clear()
+            
             # Process each track
             for track in filter(lambda t: t.is_confirmed(), tracks):
                 frame = self._draw_vehicle_info(frame, track)
                 self._update_vehicle_count(track.track_id)
                 current_vehicles.append(track.track_id)
+                with self.tracker_lock:
+                    self.vehicle_tracker.append(track.track_id)
         
         # 不在画面上显示车辆计数
         
