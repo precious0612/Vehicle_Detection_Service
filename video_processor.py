@@ -9,8 +9,6 @@ import warnings
 from functools import partial
 from rtsp_server import RTSPOutputStream
 import logging
-from threading import Lock
-import threading
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +17,7 @@ logger = logging.getLogger(__name__)
 class ProcessedFrame:
     frame: np.ndarray
     car_count: int
-    current_vehicles: List[int]
+    current_vehicles: List[int]  # 当前帧的车辆ID列表
 
 def get_device():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,8 +37,8 @@ class VideoProcessor:
         self.model = load_yolov5_model(self.device)
         self.deepsort = DeepSort()
         self.car_count = 0
-        self.vehicle_tracker = deque(maxlen=30)  # 30 frames window
-        self.tracker_lock = Lock()
+        self.vehicle_tracker = deque(maxlen=30)  # 用于总数统计
+        self.current_frame_vehicles = set()  # 用于当前帧统计
         
         # RTSP输出设置
         self.rtsp_server = None
@@ -75,10 +73,9 @@ class VideoProcessor:
         return frame
     
     def _update_vehicle_count(self, track_id: int) -> None:
-        with self.tracker_lock:
-            if track_id not in self.vehicle_tracker:
-                self.vehicle_tracker.append(track_id)
-                self.car_count += 1
+        if track_id not in self.vehicle_tracker:
+            self.vehicle_tracker.append(track_id)
+            self.car_count += 1
     
     def process_frame(self, frame: np.ndarray) -> ProcessedFrame:
         # Detect vehicles using YOLO
@@ -89,27 +86,20 @@ class VideoProcessor:
         vehicles = self._filter_vehicles(detections)
         deepsort_detections = self._format_detections(vehicles)
         
-        current_vehicles = []
+        # 清空当前帧车辆集合
+        self.current_frame_vehicles.clear()
         
         if deepsort_detections:
             # Track vehicles
             tracks = self.deepsort.update_tracks(deepsort_detections, frame=frame)
             
-            # 清空当前帧的车辆列表
-            with self.tracker_lock:
-                self.vehicle_tracker.clear()
-            
             # Process each track
             for track in filter(lambda t: t.is_confirmed(), tracks):
                 frame = self._draw_vehicle_info(frame, track)
                 self._update_vehicle_count(track.track_id)
-                current_vehicles.append(track.track_id)
-                with self.tracker_lock:
-                    self.vehicle_tracker.append(track.track_id)
+                self.current_frame_vehicles.add(track.track_id)  # 添加到当前帧集合
         
-        # 不在画面上显示车辆计数
-        
-        return ProcessedFrame(frame, self.car_count, current_vehicles)
+        return ProcessedFrame(frame, self.car_count, list(self.current_frame_vehicles))
 
     def process_stream(self, stream_url: str) -> Iterator[ProcessedFrame]:
         cap = cv2.VideoCapture(stream_url)

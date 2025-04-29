@@ -87,7 +87,7 @@ async def get_stream_info(stream_id: str):
         "input_url": worker.stream_url,
         "statistics": {
             "total_car_count": worker.processor.car_count,
-            "current_vehicles": len(worker.processor.vehicle_tracker)
+            "current_vehicles": len(worker.processor.current_frame_vehicles)
         }
     }
 
@@ -100,7 +100,7 @@ async def get_statistics(stream_id: str):
     worker = workers[stream_id]
     return {
         "total_car_count": worker.processor.car_count,
-        "current_vehicles": len(worker.processor.vehicle_tracker)
+        "current_vehicles": len(worker.processor.current_frame_vehicles)
     }
 
 @app.delete("/stop_stream/{stream_id}")
