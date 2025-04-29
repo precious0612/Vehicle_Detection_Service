@@ -38,8 +38,16 @@ cd Vehicle_Detection_Service
 
 ### 2. 启动服务
 
+- 国际版
+
 ```bash
 docker-compose up --build -d
+```
+
+- 国内
+ 
+```bash
+docker-compose up -d vehicledetect-cn
 ```
 
 首次启动会自动下载 YOLOv5 权重，后续重启无需重复下载。
