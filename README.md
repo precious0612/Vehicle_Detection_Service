@@ -84,6 +84,8 @@ Content-Type: application/json
 }
 ```
 
+**注：首次启动需要下载依赖以及模型权重**
+
 - `stream_id`：自定义唯一标识
 - 返回：HTTP/RTSP 访问地址
 

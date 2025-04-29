@@ -1,19 +1,33 @@
-FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu20.04
+FROM nvidia/cuda:12.4.0-cudnn8-devel-ubuntu20.04
+
+# 构建参数，默认国际源
+ARG USE_CHINA_MIRROR=false
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai
 
-# 安装系统依赖
-RUN apt-get update && \
+# 根据参数选择 apt 源
+RUN if [ "$USE_CHINA_MIRROR" = "true" ]; then \
+        sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list; \
+    fi && \
+    apt-get update && \
     apt-get install -y python3 python3-pip ffmpeg libgl1-mesa-glx && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY . /app
 
-# 安装 Python 依赖
+# 根据参数选择 pip 源
 RUN python3 -m pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    if [ "$USE_CHINA_MIRROR" = "true" ]; then \
+        pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple; \
+    fi && \
+    pip install --cache-dir /root/.cache/pip -r requirements.txt && \
+    if [ "$USE_CHINA_MIRROR" = "true" ]; then \
+        pip install torch==2.2.2+cu124 torchvision==0.17.2+cu124 --index-url https://pypi.tuna.tsinghua.edu.cn/simple; \
+    else \
+        pip install torch==2.2.2+cu124 torchvision==0.17.2+cu124 --index-url https://download.pytorch.org/whl/cu124; \
+    fi
 
 # 可选：提前下载YOLOv5权重
 # RUN python3 -c "import torch; torch.hub.load('ultralytics/yolov5', 'yolov5s')"

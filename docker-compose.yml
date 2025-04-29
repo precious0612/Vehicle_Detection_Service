@@ -1,10 +1,37 @@
+version: '3.8'
 services:
-  vehicledetect:
-    build: .
+  vehicledetect:  # 国际版（默认）
+    build:
+      context: .
+      args:
+        USE_CHINA_MIRROR: "false"
     container_name: vehicledetect
     ports:
       - "2334:2334"
       - "8554:8554"
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: nvidia
+    restart: unless-stopped
+    volumes:
+      - yolov5-cache:/root/.cache/torch/hub
+
+  vehicledetect-cn:  # 国内版（可选）
+    build:
+      context: .
+      args:
+        USE_CHINA_MIRROR: "true"
+    container_name: vehicledetect-cn
+    ports:
+      - "2335:2334"  # 避免端口冲突
+      - "8555:8554"
     environment:
       - PYTHONUNBUFFERED=1
     deploy:
