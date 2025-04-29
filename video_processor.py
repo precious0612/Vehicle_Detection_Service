@@ -40,7 +40,7 @@ class VideoProcessor:
         self.deepsort = DeepSort()
         self.car_count = 0
         self.vehicle_tracker = deque(maxlen=30)  # 30 frames window
-        self.tracker_lock = threading.Lock()
+        self.tracker_lock = Lock()
         
         # RTSP输出设置
         self.rtsp_server = None
